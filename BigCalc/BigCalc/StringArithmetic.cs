@@ -6,7 +6,9 @@ namespace BigCalc
 {
     public static class StringArithmetic
     {
-        private const char IdentityChar = '0';
+        private const char ZeroChar = '0';
+        private const char NegationChar = '-';
+        private const char DecimalChar = '.';
         private const int Base = 10;
 
         private static List<char> AcceptableChars { get; } = new List<char>
@@ -22,8 +24,7 @@ namespace BigCalc
             '8',
             '9',
             '.',
-            '-',
-            '+'
+            '-'
         };
 
         public static string Addition(this string lhs, string rhs)
@@ -39,7 +40,7 @@ namespace BigCalc
 
             while (index >= 0)
             {
-                var newDigit = (lhs[index] - '0') + (rhs[index] - '0') +
+                var newDigit = (lhs[index] - ZeroChar) + (rhs[index] - ZeroChar) +
                                carry;
 
                 if (newDigit >= Base)
@@ -71,7 +72,7 @@ namespace BigCalc
 
         private static bool IsZero(char character)
         {
-            return character.Equals(IdentityChar);
+            return character.Equals(ZeroChar);
         }
 
         private static int PadToEqualLength(ref string lhs, ref string rhs)
@@ -80,11 +81,11 @@ namespace BigCalc
 
             if (lhs.Length < maxLength)
             {
-                lhs = lhs.PadLeft(maxLength, IdentityChar);
+                lhs = lhs.PadLeft(maxLength, ZeroChar);
             }
             if (rhs.Length < maxLength)
             {
-                rhs = rhs.PadLeft(maxLength, IdentityChar);
+                rhs = rhs.PadLeft(maxLength, ZeroChar);
             }
 
             return maxLength;
@@ -114,7 +115,7 @@ namespace BigCalc
             // catch case when string is empty
             if (builder.Length == 0)
             {
-                builder.Append(IdentityChar);
+                builder.Append(ZeroChar);
             }
 
             return builder.ToString();
