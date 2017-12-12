@@ -6,6 +6,9 @@ namespace BigCalc
 {
     public static class StringArithmetic
     {
+        private const char IdentityChar = '0';
+        private const int Base = 10;
+
         private static List<char> AcceptableChars { get; } = new List<char>
         {
             '0',
@@ -23,32 +26,33 @@ namespace BigCalc
             '+'
         };
 
-        private const char IdentityChar = '0';
-
         public static string Addition(this string lhs, string rhs)
         {
-            ParseString(ref lhs);
-            ParseString(ref rhs);
+            lhs = ParseOperand(lhs);
+            rhs = ParseOperand(rhs);
 
             var result = new StringBuilder();
             var carry = 0;
             var inputLength = PadToEqualLength(ref lhs, ref rhs);
 
+            // only calculate when strings contained valid non-zero numbers
             if (inputLength == 0)
             {
                 result.Append(IdentityChar);
                 return result.ToString();
             }
 
-            while (inputLength > 0)
+            var index = inputLength - 1;
+
+            while (index >= 0)
             {
-                var newDigit = (lhs[inputLength - 1] - '0') + (rhs[inputLength - 1] - '0') +
+                var newDigit = (lhs[index] - '0') + (rhs[index] - '0') +
                                carry;
 
-                if (newDigit > 9)
+                if (newDigit >= Base)
                 {
                     carry = 1;
-                    newDigit -= 10;
+                    newDigit -= Base;
                 }
                 else
                 {
@@ -56,7 +60,7 @@ namespace BigCalc
                 }
 
                 result.Insert(0, newDigit.ToString());
-                inputLength--;
+                index--;
             }
 
             if (carry > 0)
@@ -93,7 +97,7 @@ namespace BigCalc
             return maxLength;
         }
 
-        private static void ParseString(ref string str)
+        private static string ParseOperand(string str)
         {
             var builder = new StringBuilder();
             var leadingZeros = true;
@@ -104,6 +108,7 @@ namespace BigCalc
 
                 if (!IsZero(character))
                 {
+                    // occurs on first instance of non-zero number
                     leadingZeros = false;
                 }
 
@@ -113,7 +118,7 @@ namespace BigCalc
                 }
             }
 
-            str = builder.ToString();
+            return builder.ToString();
         }
     }
 }
