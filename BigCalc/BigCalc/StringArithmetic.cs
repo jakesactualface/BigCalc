@@ -1,37 +1,45 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace BigCalc
 {
     public static class StringArithmetic
     {
+        private static readonly List<char> AcceptableChars = new List<char>
+        {
+            '0',
+            '1',
+            '2',
+            '3',
+            '4',
+            '5',
+            '6',
+            '7',
+            '8',
+            '9',
+            '.',
+            '-',
+            '+'
+        };
+
         public static string Addition(this string lhs, string rhs)
         {
-            // TODO handle parsing
+            ParseStrings(ref lhs, ref rhs);
 
-            var result = new System.Text.StringBuilder();
-            var inputLength = 0;
+            var result = new StringBuilder();
             var carry = 0;
-
-            inputLength = System.Math.Max(lhs.Length, rhs.Length);
-
-            if (lhs.Length > rhs.Length)
-            {
-                rhs = rhs.PadLeft(inputLength, '0');
-            }
-            else
-            {
-                lhs = lhs.PadLeft(inputLength, '0');
-            }
+            var inputLength = PadToEqualLength(ref lhs, ref rhs);
 
             while (inputLength > 0)
             {
-                var newDigit = ((int) lhs[inputLength - 1] - (int) '0') + ((int) rhs[inputLength - 1] - (int) '0') +
+                var newDigit = (lhs[inputLength - 1] - '0') + (rhs[inputLength - 1] - '0') +
                                carry;
 
                 if (newDigit > 9)
                 {
-                    carry = newDigit / 10;
-                    newDigit %= 10;
+                    carry = 1;
+                    newDigit -= 10;
                 }
                 else
                 {
@@ -48,6 +56,56 @@ namespace BigCalc
             }
 
             return result.ToString();
+        }
+
+        private static bool IsValid(char character)
+        {
+            return AcceptableChars.Contains(character);
+        }
+
+        private static int PadToEqualLength(ref string lhs, ref string rhs)
+        {
+            var maxLength = Math.Max(lhs.Length, rhs.Length);
+
+            if (lhs.Length < maxLength)
+            {
+                lhs = lhs.PadLeft(maxLength, '0');
+            }
+            if (rhs.Length < maxLength)
+            {
+                rhs = rhs.PadLeft(maxLength, '0');
+            }
+
+            return maxLength;
+        }
+
+        private static void ParseStrings(ref string lhs, ref string rhs)
+        {
+            var builder = new StringBuilder();
+
+            // parse lhs
+            foreach (var character in lhs)
+            {
+                if (IsValid(character))
+                {
+                    builder.Append(character);
+                }
+
+                lhs = builder.ToString();
+            }
+
+            builder.Clear();
+
+            // parse rhs
+            foreach (var character in rhs)
+            {
+                if (IsValid(character))
+                {
+                    builder.Append(character);
+                }
+
+                rhs = builder.ToString();
+            }
         }
     }
 }
