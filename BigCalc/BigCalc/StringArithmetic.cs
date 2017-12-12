@@ -6,6 +6,9 @@ namespace BigCalc
 {
     public static class StringArithmetic
     {
+        // TODO remove this after testing
+        private const char DebugChar = '$';
+
         private const char ZeroChar = '0';
         private const char NegationChar = '-';
         private const char DecimalChar = '.';
@@ -32,47 +35,77 @@ namespace BigCalc
             lhs = ParseOperand(lhs);
             rhs = ParseOperand(rhs);
 
+            var usesAddLogic = CheckAddition(lhs, rhs);
             var result = new StringBuilder();
-            var carry = 0;
+            var carry = false;
             var inputLength = PadToEqualLength(ref lhs, ref rhs);
 
             var index = inputLength - 1;
+            var stopIndex = usesAddLogic ? 0 : 1;
 
-            while (index >= 0)
+            while (index >= stopIndex)
             {
-                var newDigit = (lhs[index] - ZeroChar) + (rhs[index] - ZeroChar) +
-                               carry;
+                var leftDigit = lhs[index] - ZeroChar;
+                var rightDigit = rhs[index] - ZeroChar;
+                int nextDigit;
 
-                if (newDigit >= Base)
+                nextDigit = usesAddLogic
+                    ? ProcessAdd(leftDigit, rightDigit, carry)
+                    : ProcessSubtract(leftDigit, rightDigit, carry);
+
+                if (nextDigit != leftDigit + rightDigit)
                 {
-                    carry = 1;
-                    newDigit -= Base;
-                }
-                else
-                {
-                    carry = 0;
+                    carry = true;
                 }
 
-                result.Insert(0, newDigit.ToString());
+                result.Insert(0, nextDigit.ToString());
                 index--;
             }
 
-            if (carry > 0)
+            var finalChar = CreateFinalChar(usesAddLogic, carry);
+
+            if (carry)
             {
-                result.Insert(0, carry.ToString());
+                result.Insert(0, finalChar);
             }
 
             return result.ToString();
         }
 
+        // TODO better name after figuring out how I want this to work
+        private static bool CheckAddition(string lhs, string rhs)
+        {
+            // addition logic is only needed when individual numbers are added
+            // this occurs when neither operand is negative, or when both are negative
+            return CheckNegative(lhs) == CheckNegative(rhs);
+        }
+
+        private static bool CheckNegative(string str)
+        {
+            var result = str[0].Equals(NegationChar);
+
+            return result;
+        }
+
+        private static char CreateFinalChar(bool additionLogic, bool carry)
+        {
+            var result = DebugChar;
+
+            if (additionLogic)
+            {
+                result = '1';
+            }
+            else if (carry)
+            {
+                result = '-';
+            }
+
+            return result;
+        }
+
         private static bool IsValid(char character)
         {
             return AcceptableChars.Contains(character);
-        }
-
-        private static bool IsZero(char character)
-        {
-            return character.Equals(ZeroChar);
         }
 
         private static int PadToEqualLength(ref string lhs, ref string rhs)
@@ -100,7 +133,13 @@ namespace BigCalc
             {
                 if (!IsValid(character)) continue;
 
-                if (!IsZero(character))
+                if (character.Equals(NegationChar))
+                {
+                    builder.Append(character);
+                    continue;
+                }
+
+                if (!character.Equals(ZeroChar))
                 {
                     // occurs on first instance of non-zero number
                     leadingZeros = false;
@@ -119,6 +158,34 @@ namespace BigCalc
             }
 
             return builder.ToString();
+        }
+
+        private static int ProcessAdd(int lhs, int rhs, bool carry)
+        {
+            // add 1 when a carry occurred
+            var newDigit = carry ? lhs + rhs + 1 : lhs + rhs;
+
+            // new digit is modulo arithmetic base
+            if (newDigit >= Base)
+            {
+                newDigit -= Base;
+            }
+
+            return newDigit;
+        }
+
+        private static int ProcessSubtract(int lhs, int rhs, bool carry)
+        {
+            // subtract 1 when a carry occurred
+            var newDigit = carry ? lhs - rhs - 1 : lhs - rhs;
+
+            // new digit is always positive
+            if (newDigit < 0)
+            {
+                newDigit = Math.Abs(newDigit);
+            }
+
+            return newDigit;
         }
     }
 }
