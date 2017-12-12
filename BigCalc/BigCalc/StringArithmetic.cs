@@ -6,7 +6,7 @@ namespace BigCalc
 {
     public static class StringArithmetic
     {
-        private static readonly List<char> AcceptableChars = new List<char>
+        private static List<char> AcceptableChars { get; } = new List<char>
         {
             '0',
             '1',
@@ -23,13 +23,22 @@ namespace BigCalc
             '+'
         };
 
+        private const char IdentityChar = '0';
+
         public static string Addition(this string lhs, string rhs)
         {
-            ParseStrings(ref lhs, ref rhs);
+            ParseString(ref lhs);
+            ParseString(ref rhs);
 
             var result = new StringBuilder();
             var carry = 0;
             var inputLength = PadToEqualLength(ref lhs, ref rhs);
+
+            if (inputLength == 0)
+            {
+                result.Append(IdentityChar);
+                return result.ToString();
+            }
 
             while (inputLength > 0)
             {
@@ -63,49 +72,48 @@ namespace BigCalc
             return AcceptableChars.Contains(character);
         }
 
+        private static bool IsZero(char character)
+        {
+            return character.Equals(IdentityChar);
+        }
+
         private static int PadToEqualLength(ref string lhs, ref string rhs)
         {
             var maxLength = Math.Max(lhs.Length, rhs.Length);
 
             if (lhs.Length < maxLength)
             {
-                lhs = lhs.PadLeft(maxLength, '0');
+                lhs = lhs.PadLeft(maxLength, IdentityChar);
             }
             if (rhs.Length < maxLength)
             {
-                rhs = rhs.PadLeft(maxLength, '0');
+                rhs = rhs.PadLeft(maxLength, IdentityChar);
             }
 
             return maxLength;
         }
 
-        private static void ParseStrings(ref string lhs, ref string rhs)
+        private static void ParseString(ref string str)
         {
             var builder = new StringBuilder();
+            var leadingZeros = true;
 
-            // parse lhs
-            foreach (var character in lhs)
+            foreach (var character in str)
             {
-                if (IsValid(character))
+                if (!IsValid(character)) continue;
+
+                if (!IsZero(character))
+                {
+                    leadingZeros = false;
+                }
+
+                if (!leadingZeros)
                 {
                     builder.Append(character);
                 }
-
-                lhs = builder.ToString();
             }
 
-            builder.Clear();
-
-            // parse rhs
-            foreach (var character in rhs)
-            {
-                if (IsValid(character))
-                {
-                    builder.Append(character);
-                }
-
-                rhs = builder.ToString();
-            }
+            str = builder.ToString();
         }
     }
 }

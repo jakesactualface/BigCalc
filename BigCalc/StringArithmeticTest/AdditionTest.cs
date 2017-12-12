@@ -7,6 +7,19 @@ namespace StringArithmeticTest
     public class AdditionTest
     {
         [TestMethod]
+        public void ZeroAdditionTrimTest_Success()
+        {
+            const string lhs = "0000000000000";
+            const string rhs = "0000000000000";
+            const string correctResult = "0";
+
+            var result = lhs.Addition(rhs);
+
+            Assert.AreEqual(correctResult, result,
+                $"Expected for {lhs} + {rhs} : {correctResult}; Actual: {result}");
+        }
+
+        [TestMethod]
         public void SmallAdditionTest_Success()
         {
             const string lhs = "2";
@@ -16,7 +29,7 @@ namespace StringArithmeticTest
             var result = lhs.Addition(rhs);
 
             Assert.AreEqual(correctResult, result,
-                $"Expected for {lhs} + {rhs} : {result}; Actual: {correctResult}");
+                $"Expected for {lhs} + {rhs} : {correctResult}; Actual: {result}");
         }
 
         [TestMethod]
@@ -29,7 +42,7 @@ namespace StringArithmeticTest
             var result = lhs.Addition(rhs);
 
             Assert.AreEqual(correctResult, result,
-                $"Expected for {lhs} + {rhs} : {result}; Actual: {correctResult}");
+                $"Expected for {lhs} + {rhs} : {correctResult}; Actual: {result}");
         }
 
         [TestMethod]
@@ -42,7 +55,7 @@ namespace StringArithmeticTest
             var result = lhs.Addition(rhs);
 
             Assert.AreEqual(correctResult, result,
-                $"Expected for {lhs} + {rhs} : {result}; Actual: {correctResult}");
+                $"Expected for {lhs} + {rhs} : {correctResult}; Actual: {result}");
         }
 
         [TestMethod]
@@ -55,7 +68,20 @@ namespace StringArithmeticTest
             var result = lhs.Addition(rhs);
 
             Assert.AreEqual(correctResult, result,
-                $"Expected for {lhs} + {rhs} : {result}; Actual: {correctResult}");
+                $"Expected for {lhs} + {rhs} : {correctResult}; Actual: {result}");
+        }
+
+        [TestMethod]
+        public void PollutedLhsTest_Success()
+        {
+            const string lhs = "11111q11111";
+            const string rhs = "1111111111";
+            const string correctResult = "2222222222";
+
+            var result = lhs.Addition(rhs);
+
+            Assert.AreEqual(correctResult, result,
+                $"Expected for {lhs} + {rhs} : {correctResult}; Actual: {result}");
         }
     }
 }
