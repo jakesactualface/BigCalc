@@ -20,6 +20,45 @@ namespace StringArithmeticTest
         }
 
         [TestMethod]
+        public void ZeroAdditionLhsTrimTest_Success()
+        {
+            const string lhs = "0000000000000";
+            const string rhs = "0";
+            const string correctResult = "0";
+
+            var result = lhs.Addition(rhs);
+
+            Assert.AreEqual(correctResult, result,
+                $"Expected for {lhs} + {rhs} : {correctResult}; Actual: {result}");
+        }
+
+        [TestMethod]
+        public void ZeroAdditionRhsTrimTest_Success()
+        {
+            const string lhs = "0";
+            const string rhs = "0000000000000";
+            const string correctResult = "0";
+
+            var result = lhs.Addition(rhs);
+
+            Assert.AreEqual(correctResult, result,
+                $"Expected for {lhs} + {rhs} : {correctResult}; Actual: {result}");
+        }
+
+        [TestMethod]
+        public void ZeroAdditionSmallTest_Success()
+        {
+            const string lhs = "0";
+            const string rhs = "0";
+            const string correctResult = "0";
+
+            var result = lhs.Addition(rhs);
+
+            Assert.AreEqual(correctResult, result,
+                $"Expected for {lhs} + {rhs} : {correctResult}; Actual: {result}");
+        }
+
+        [TestMethod]
         public void SmallAdditionTest_Success()
         {
             const string lhs = "2";

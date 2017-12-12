@@ -35,13 +35,6 @@ namespace BigCalc
             var carry = 0;
             var inputLength = PadToEqualLength(ref lhs, ref rhs);
 
-            // only calculate when strings contained valid non-zero numbers
-            if (inputLength == 0)
-            {
-                result.Append(IdentityChar);
-                return result.ToString();
-            }
-
             var index = inputLength - 1;
 
             while (index >= 0)
@@ -116,6 +109,12 @@ namespace BigCalc
                 {
                     builder.Append(character);
                 }
+            }
+
+            // catch case when string is empty
+            if (builder.Length == 0)
+            {
+                builder.Append(IdentityChar);
             }
 
             return builder.ToString();
