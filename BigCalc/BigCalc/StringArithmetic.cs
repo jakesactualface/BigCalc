@@ -6,9 +6,6 @@ namespace BigCalc
 {
     public static class StringArithmetic
     {
-        // TODO remove this after testing
-        private const char DebugChar = '$';
-
         private const char ZeroChar = '0';
         private const char NegationChar = '-';
         private const char DecimalChar = '.';
@@ -36,12 +33,14 @@ namespace BigCalc
             rhs = ParseOperand(rhs);
 
             var usesAddLogic = CheckAddition(lhs, rhs);
+            var leftNegative = CheckNegative(lhs);
+            var rightNegative = CheckNegative(rhs);
             var result = new StringBuilder();
             var carry = false;
             var inputLength = PadToEqualLength(ref lhs, ref rhs);
 
             var index = inputLength - 1;
-            var stopIndex = usesAddLogic ? 0 : 1;
+            var stopIndex = leftNegative || rightNegative ? 1 : 0;
 
             while (index >= stopIndex)
             {
@@ -53,21 +52,20 @@ namespace BigCalc
                     ? ProcessAdd(leftDigit, rightDigit, carry)
                     : ProcessSubtract(leftDigit, rightDigit, carry);
 
-                if (nextDigit != leftDigit + rightDigit)
+                if (usesAddLogic)
                 {
-                    carry = true;
+                    carry = carry ? nextDigit != leftDigit + rightDigit + 1 : nextDigit != leftDigit + rightDigit;
+                }
+                else
+                {
+                    carry = carry ? nextDigit != leftDigit - rightDigit - 1 : nextDigit != leftDigit - rightDigit;
                 }
 
                 result.Insert(0, nextDigit.ToString());
                 index--;
             }
 
-            var finalChar = CreateFinalChar(usesAddLogic, carry);
-
-            if (carry)
-            {
-                result.Insert(0, finalChar);
-            }
+            result.Insert(0, CreateFinalChars(usesAddLogic, leftNegative, rightNegative, carry));
 
             return result.ToString();
         }
@@ -87,20 +85,29 @@ namespace BigCalc
             return result;
         }
 
-        private static char CreateFinalChar(bool additionLogic, bool carry)
+        private static string CreateFinalChars(bool additionLogic, bool leftNegative, bool rightNegative, bool carry)
         {
-            var result = DebugChar;
+            var result = new StringBuilder();
 
-            if (additionLogic)
+            if (additionLogic && leftNegative && rightNegative)
             {
-                result = '1';
+                result.Append('-');
             }
-            else if (carry)
+            else if (!additionLogic && !carry && leftNegative)
             {
-                result = '-';
+                result.Append('-');
+            }
+            else if (!additionLogic && carry && rightNegative)
+            {
+                result.Append('-');
             }
 
-            return result;
+            if (additionLogic && carry)
+            {
+                result.Append('1');
+            }
+
+            return result.ToString();
         }
 
         private static bool IsValid(char character)

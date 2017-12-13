@@ -217,8 +217,8 @@ namespace StringArithmeticTest
         [TestMethod]
         public void NegativeRhsZeroResultTest_Success()
         {
-            const string lhs = "-1";
-            const string rhs = "1";
+            const string lhs = "1";
+            const string rhs = "-1";
             const string correctResult = "0";
 
             var result = lhs.Addition(rhs);
