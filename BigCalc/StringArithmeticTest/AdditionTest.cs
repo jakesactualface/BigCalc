@@ -6,6 +6,9 @@ namespace StringArithmeticTest
     [TestClass]
     public class AdditionTest
     {
+
+        #region integer tests
+
         [TestMethod]
         public void ZeroTrimTest_Success()
         {
@@ -278,5 +281,8 @@ namespace StringArithmeticTest
             Assert.AreEqual(correctResult, result,
                 $"Expected for {lhs} + {rhs} : {correctResult}; Actual: {result}");
         }
+
+        #endregion
+
     }
 }

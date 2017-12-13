@@ -27,6 +27,12 @@ namespace BigCalc
             '-'
         };
 
+        /// <summary>
+        /// Performs the addition of two strings, interpreted as numeric values.
+        /// </summary>
+        /// <param name="lhs">Left-hand side operand of the addition (can be negative)</param>
+        /// <param name="rhs">Right-hand side operand of the addition (can be negative)</param>
+        /// <returns>Numeric result of the addition, as a string</returns>
         public static string Addition(this string lhs, string rhs)
         {
             lhs = ParseNumeric(lhs);
@@ -52,24 +58,33 @@ namespace BigCalc
                     ? ProcessSubtract(leftDigit, rightDigit, carry)
                     : ProcessAdd(leftDigit, rightDigit, carry);
 
-                if (subtractionLogic)
-                {
-                    carry = carry
-                        ? nextDigit != leftDigit - rightDigit - 1
-                        : nextDigit != leftDigit - rightDigit;
-                }
-                else
-                {
-                    carry = carry 
-                        ? nextDigit != leftDigit + rightDigit + 1 
-                        : nextDigit != leftDigit + rightDigit;
-                }
+                carry = CheckCarry(nextDigit, carry, leftDigit, rightDigit, subtractionLogic);
 
                 result.Insert(0, nextDigit.ToString());
                 index--;
             }
 
             return FinalizeResult(result, leftNegative, rightNegative, carry);
+        }
+
+        private static bool CheckCarry(int next, bool carry, int left, int right, bool subtracting)
+        {
+            bool result;
+
+            if (subtracting)
+            {
+                result = carry
+                    ? next != left - right - 1
+                    : next != left - right;
+            }
+            else
+            {
+                result = carry
+                    ? next != left + right + 1
+                    : next != left + right;
+            }
+
+            return result;
         }
 
         private static bool CheckNegative(string str)
