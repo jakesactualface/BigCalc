@@ -252,5 +252,31 @@ namespace StringArithmeticTest
             Assert.AreEqual(correctResult, result,
                 $"Expected for {lhs} + {rhs} : {correctResult}; Actual: {result}");
         }
+
+        [TestMethod]
+        public void NegativeLhsLargeZeroResultTest_Success()
+        {
+            const string lhs = "-9999999999999999999999999999999999999999";
+            const string rhs = "9999999999999999999999999999999999999999";
+            const string correctResult = "0";
+
+            var result = lhs.Addition(rhs);
+
+            Assert.AreEqual(correctResult, result,
+                $"Expected for {lhs} + {rhs} : {correctResult}; Actual: {result}");
+        }
+
+        [TestMethod]
+        public void NegativeRhsLargeZeroResultTest_Success()
+        {
+            const string lhs = "9999999999999999999999999999999999999999";
+            const string rhs = "-9999999999999999999999999999999999999999";
+            const string correctResult = "0";
+
+            var result = lhs.Addition(rhs);
+
+            Assert.AreEqual(correctResult, result,
+                $"Expected for {lhs} + {rhs} : {correctResult}; Actual: {result}");
+        }
     }
 }
