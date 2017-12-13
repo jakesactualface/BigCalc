@@ -29,12 +29,12 @@ namespace BigCalc
 
         public static string Addition(this string lhs, string rhs)
         {
-            lhs = ParseOperand(lhs);
-            rhs = ParseOperand(rhs);
+            lhs = ParseNumeric(lhs);
+            rhs = ParseNumeric(rhs);
 
-            var usesAddLogic = CheckAddition(lhs, rhs);
             var leftNegative = CheckNegative(lhs);
             var rightNegative = CheckNegative(rhs);
+            var subtractionLogic = leftNegative != rightNegative;
             var result = new StringBuilder();
             var carry = false;
             var inputLength = PadToEqualLength(ref lhs, ref rhs);
@@ -48,34 +48,28 @@ namespace BigCalc
                 var rightDigit = rhs[index] - ZeroChar;
                 int nextDigit;
 
-                nextDigit = usesAddLogic
-                    ? ProcessAdd(leftDigit, rightDigit, carry)
-                    : ProcessSubtract(leftDigit, rightDigit, carry);
+                nextDigit = subtractionLogic
+                    ? ProcessSubtract(leftDigit, rightDigit, carry)
+                    : ProcessAdd(leftDigit, rightDigit, carry);
 
-                if (usesAddLogic)
+                if (subtractionLogic)
                 {
-                    carry = carry ? nextDigit != leftDigit + rightDigit + 1 : nextDigit != leftDigit + rightDigit;
+                    carry = carry
+                        ? nextDigit != leftDigit - rightDigit - 1
+                        : nextDigit != leftDigit - rightDigit;
                 }
                 else
                 {
-                    carry = carry ? nextDigit != leftDigit - rightDigit - 1 : nextDigit != leftDigit - rightDigit;
+                    carry = carry 
+                        ? nextDigit != leftDigit + rightDigit + 1 
+                        : nextDigit != leftDigit + rightDigit;
                 }
 
                 result.Insert(0, nextDigit.ToString());
                 index--;
             }
 
-            result.Insert(0, CreateFinalChars(usesAddLogic, leftNegative, rightNegative, carry));
-
-            return result.ToString();
-        }
-
-        // TODO better name after figuring out how I want this to work
-        private static bool CheckAddition(string lhs, string rhs)
-        {
-            // addition logic is only needed when individual numbers are added
-            // this occurs when neither operand is negative, or when both are negative
-            return CheckNegative(lhs) == CheckNegative(rhs);
+            return FinalizeResult(result, leftNegative, rightNegative, carry);
         }
 
         private static bool CheckNegative(string str)
@@ -85,29 +79,43 @@ namespace BigCalc
             return result;
         }
 
-        private static string CreateFinalChars(bool additionLogic, bool leftNegative, bool rightNegative, bool carry)
+        private static string CreateFinalChars(bool leftNegative, bool rightNegative, bool carry)
         {
             var result = new StringBuilder();
 
-            if (additionLogic && leftNegative && rightNegative)
+            if (leftNegative && rightNegative)
             {
-                result.Append('-');
+                result.Append(NegationChar);
             }
-            else if (!additionLogic && !carry && leftNegative)
+            else if (leftNegative && !carry)
             {
-                result.Append('-');
+                result.Append(NegationChar);
             }
-            else if (!additionLogic && carry && rightNegative)
+            else if (rightNegative && carry)
             {
-                result.Append('-');
+                result.Append(NegationChar);
             }
 
-            if (additionLogic && carry)
+            if (leftNegative == rightNegative && carry)
             {
                 result.Append('1');
             }
 
             return result.ToString();
+        }
+
+        private static string FinalizeResult(StringBuilder builder, bool leftNegative, bool rightNegative, bool carry)
+        {
+            builder.Insert(0, CreateFinalChars(leftNegative, rightNegative, carry));
+
+            var result = ParseNumeric(builder.ToString());
+
+            if (result.Equals($"{NegationChar}"))
+            {
+                result = ZeroChar.ToString();
+            }
+
+            return result;
         }
 
         private static bool IsValid(char character)
@@ -131,7 +139,7 @@ namespace BigCalc
             return maxLength;
         }
 
-        private static string ParseOperand(string str)
+        private static string ParseNumeric(string str)
         {
             var builder = new StringBuilder();
             var leadingZeros = true;
