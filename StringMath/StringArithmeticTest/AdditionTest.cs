@@ -1,4 +1,4 @@
-using BigCalc;
+using StringMath;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace StringArithmeticTest

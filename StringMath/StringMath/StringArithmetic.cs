@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BigCalc
+namespace StringMath
 {
     public static class StringArithmetic
     {
