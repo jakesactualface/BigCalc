@@ -15,3 +15,6 @@ The following is the 500,000th number in the Fibonacci sequence:
 Your new upper-bound on precision is now determined by your environment's maximum string length, or the amount of RAM your system has at its disposal. Whichever one you manage to hit first.
 
 Enjoy. :)
+
+### Current operations supported
+ - Addition of integers (positive or negative)
