@@ -101,46 +101,12 @@ namespace StringMath
             return LeftOperand.IsNegative == RightOperand.IsNegative;
         }
 
-        private static void PadOperandDecimalLengths()
-        {
-            if (LeftOperand.Decimals.Length < RightOperand.Decimals.Length)
-            {
-                LeftOperand.Decimals =
-                    LeftOperand.Decimals.PadRight(RightOperand.Decimals.Length, Constants.ZeroCharacter);
-            }
-            else
-            {
-                RightOperand.Decimals =
-                    RightOperand.Decimals.PadRight(LeftOperand.Decimals.Length, Constants.ZeroCharacter);
-            }
-        }
-
-        private static void PadOperandIntegerLengths()
-        {
-            if (LeftOperand.Integers.Length < RightOperand.Integers.Length)
-            {
-                LeftOperand.Integers =
-                    LeftOperand.Integers.PadLeft(RightOperand.Integers.Length, Constants.ZeroCharacter);
-            }
-            else
-            {
-                RightOperand.Integers =
-                    RightOperand.Integers.PadLeft(LeftOperand.Integers.Length, Constants.ZeroCharacter);
-            }
-        }
-
-        private static void PadOperandLengths()
-        {
-            PadOperandIntegerLengths();
-            PadOperandDecimalLengths();
-        }
-
-        private static bool CheckDecimal(string str)
+        private static bool CheckForDecimal(string str)
         {
             return str.Contains(Constants.DecimalCharacter.ToString());
         }
 
-        private static bool CheckNegative(string str)
+        private static bool CheckForNegative(string str)
         {
             return str.StartsWith(Constants.NegationCharacter);
         }
@@ -149,7 +115,7 @@ namespace StringMath
         {
             var builder = new StringBuilder();
 
-            if (CheckDecimal(input))
+            if (CheckForDecimal(input))
             {
                 for (var i = input.Length - 1; i >= 0 && !input[i].Equals(Constants.DecimalCharacter); i--)
                 {
@@ -256,13 +222,47 @@ namespace StringMath
             return Constants.AcceptableChars.Contains(character);
         }
 
+        private static void PadOperandDecimalLengths()
+        {
+            if (LeftOperand.Decimals.Length < RightOperand.Decimals.Length)
+            {
+                LeftOperand.Decimals =
+                    LeftOperand.Decimals.PadRight(RightOperand.Decimals.Length, Constants.ZeroCharacter);
+            }
+            else
+            {
+                RightOperand.Decimals =
+                    RightOperand.Decimals.PadRight(LeftOperand.Decimals.Length, Constants.ZeroCharacter);
+            }
+        }
+
+        private static void PadOperandIntegerLengths()
+        {
+            if (LeftOperand.Integers.Length < RightOperand.Integers.Length)
+            {
+                LeftOperand.Integers =
+                    LeftOperand.Integers.PadLeft(RightOperand.Integers.Length, Constants.ZeroCharacter);
+            }
+            else
+            {
+                RightOperand.Integers =
+                    RightOperand.Integers.PadLeft(LeftOperand.Integers.Length, Constants.ZeroCharacter);
+            }
+        }
+
+        private static void PadOperandLengths()
+        {
+            PadOperandIntegerLengths();
+            PadOperandDecimalLengths();
+        }
+
         private static Operand ParseOperand(string input)
         {
             var result = new Operand();
             input = GetValidCharacters(input);
 
-            result.IsNegative = CheckNegative(input);
-            result.HasDecimal = CheckDecimal(input);
+            result.IsNegative = CheckForNegative(input);
+            result.HasDecimal = CheckForDecimal(input);
             result.Integers = GetIntegerString(input);
             result.Decimals = GetDecimalString(input);
 
